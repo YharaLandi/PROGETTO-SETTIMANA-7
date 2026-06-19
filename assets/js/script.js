@@ -141,3 +141,87 @@ function creaCardSquadra(squadra, isFavourite) {
  
   return col;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ─── LISTENER ────────────────────────────────────────────────────────────────
+ 
+// Gestisce il click sul bottone Cerca
+searchBtn.addEventListener("click", async () => {
+  const query = searchInput.value.trim();
+ 
+  // Non faccio nulla se il campo è vuoto
+  if (!query) return;
+ 
+  // Mostro lo spinner e nascondo eventuali errori precedenti
+  spinner.classList.remove("d-none");
+  errorMsg.classList.add("d-none");
+  resultsEmpty.classList.add("d-none");
+ 
+  try {
+    const squadre = await cercaSquadre(query);
+    mostraRisultati(squadre);
+  } catch (err) {
+    // Mostro il messaggio di errore rosso
+    errorText.textContent = err.message;
+    errorMsg.classList.remove("d-none");
+  } finally {
+    // Nascondo sempre lo spinner, che vada bene o male
+    spinner.classList.add("d-none");
+  }
+});
