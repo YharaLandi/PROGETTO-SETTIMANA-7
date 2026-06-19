@@ -87,14 +87,25 @@ async function caricaDettagliSquadra(idSquadra) {
  
   return { prossimi, ultimi };
 }
+
+// ─── RIFERIMENTI AL DOM ───────────────────────────────────────────────────────
+
+const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
+const resultsGrid = document.getElementById("resultsGrid");
+const resultsEmpty = document.getElementById("resultsEmpty");
+const spinner = document.getElementById("spinner");
+const errorMsg = document.getElementById("errorMsg");
+const errorText = document.getElementById("errorText");
+
  // ─── DOM ─────────────────────────────────────────────────────────────────────
  // Crea e restituisce una card squadra come elemento DOM
 // solito, u so createElement invece di innerHTML per sicurezza
 function creaCardSquadra(squadra, isFavourite) {
   // Colonna Bootstrap per la griglia responsive
-  /*squadra.logo(e sintassi simili) contiene l'URL del logo che l'API ci ha restituito nel campo strBadge, che nel costruttore di Squadra abbiamo mappato come this.logo = datiApi.strBadge.
+  /*squadra.logo(e sintassi simili) contiene l'URL del logo che l'API ci ha restituito nel campo strBadge, che nel costruttore di Squadra abbiamo mappato come this.logo = datiApi.strBadge.*/
   const col = document.createElement("div");
-  col.className = "col-12 col-sm-6 col-md-4 col-lg-3";*/
+  col.className = "col-12 col-sm-6 col-md-4 col-lg-3";
  
   const card = document.createElement("div");
   card.className = "sh-card";
@@ -140,6 +151,29 @@ function creaCardSquadra(squadra, isFavourite) {
   col.appendChild(card);
  
   return col;
+}
+
+// ─── RENDERING ───────────────────────────────────────────────────────────────
+ 
+// Mostra le card dei risultati di ricerca nella griglia
+function mostraRisultati(squadre) {
+  // Svuoto la griglia prima di aggiungere i nuovi risultati
+  resultsGrid.innerHTML = "";
+ 
+  // Se non ci sono risultati mostro il messaggio e mi fermo
+  if (squadre.length === 0) {
+    const msg = document.createElement("p");
+    msg.className = "sh-empty-text";
+    msg.textContent = "Nessuna squadra trovata.";
+    resultsGrid.appendChild(msg);
+    return;
+  }
+ 
+  // Creo una card per ogni squadra e la aggiungo alla griglia
+  squadre.forEach((squadra) => {
+    const card = creaCardSquadra(squadra, false);
+    resultsGrid.appendChild(card);
+  });
 }
 
 
