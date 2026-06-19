@@ -58,9 +58,8 @@ body {
 }
  
 .sh-btn-cerca:hover {
-  background-color: hsl(45, 90%, 55%);
-  color: #fff;
-  border-color: hsl(45, 90%, 55%);
+  background-color: #ebe4cf;
+  color: #193366;
 }
  
 /* --- SEZIONI --- */
