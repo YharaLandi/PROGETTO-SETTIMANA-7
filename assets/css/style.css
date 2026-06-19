@@ -56,7 +56,159 @@ body {
   white-space: nowrap;
   transition: background-color 0.2s, color 0.2s;
 }
+ 
 .sh-btn-cerca:hover {
-  background-color: hsl(45, 94%, 87%);
+  background-color: hsl(45, 90%, 55%);
+  color: #fff;
+  border-color: hsl(45, 90%, 55%);
+}
+ 
+/* --- SEZIONI --- */
+.sh-section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+ 
+.sh-star {
+  color: #f5a623;
+}
+ 
+.sh-empty-text {
+  color: #888;
+  font-style: italic;
+  margin-top: 0.5rem;
+}
+ 
+/* --- CARD SQUADRA --- */
+.sh-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.2rem 1rem;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  height: 100%;
+}
+ 
+.sh-card-logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+}
+ 
+.sh-card-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin: 0.3rem 0 0;
+}
+ 
+.sh-card-league,
+.sh-card-country {
+  font-size: 0.82rem;
+  color: #777;
+  margin: 0;
+}
+ 
+/* --- BOTTONI CARD --- */
+.sh-btn-add {
+  background-color: hsl(45, 90%, 55%);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  width: 100%;
+  padding: 0.5rem;
+  font-weight: 500;
+  margin-top: auto;
+  transition: background-color 0.2s;
+}
+ 
+.sh-btn-add:hover {
+  background-color: hsl(45, 90%, 48%);
+}
+ 
+.sh-btn-remove {
+  background-color: #ffe5e5;
+  color: #AA0000;
+  border: none;
+  border-radius: 6px;
+  width: 100%;
+  padding: 0.5rem;
+  font-weight: 500;
+  margin-top: auto;
+  transition: background-color 0.2s;
+}
+ 
+.sh-btn-remove:hover {
+  background-color: #ffd0d0;
+}
+ 
+.sh-btn-already {
+  background-color: #e9ecef;
+  color: #555;
+  border: none;
+  border-radius: 6px;
+  width: 100%;
+  padding: 0.5rem;
+  font-weight: 500;
+  margin-top: auto;
+  cursor: default;
+}
+ 
+/* --- SPINNER --- */
+.sh-spinner {
   color: #193366;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+ 
+/* --- SEZIONE DETTAGLI --- */
+.sh-details-title {
+  color: #193366;
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+ 
+.sh-events-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+}
+ 
+.sh-divider {
+  border-color: #193366;
+  opacity: 1;
+  margin-top: 0.2rem;
+  margin-bottom: 0.8rem;
+}
+ 
+.sh-events-list li {
+  margin-bottom: 0.8rem;
+}
+ 
+.sh-event-date {
+  font-size: 0.78rem;
+  color: #888;
+  display: block;
+  margin-bottom: 0.1rem;
+}
+ 
+.sh-event-match {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+ 
+/* badge punteggio */
+.sh-badge-score {
+  display: inline-block;
+  background-color: #27ae60;
+  color: #fff;
+  border-radius: 4px;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-left: 0.4rem;
 }
