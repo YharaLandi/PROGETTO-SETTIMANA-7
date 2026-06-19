@@ -253,11 +253,19 @@ function mostraPreferiti() {
 
   favouritesEmpty.classList.add("d-none");
 
-  preferiti.forEach((squadra) => {
-    const col = document.createElement("div");
-    col.className = "col-12 col-md-6 col-lg-3";
+  preferiti.forEach((squadra, index) => {
+  const col = document.createElement("div");
 
-    const card = document.createElement("div");
+  const ultimo = index === preferiti.length - 1;
+  const numeroDispari = preferiti.length % 2 !== 0;
+
+  if (numeroDispari && ultimo) {
+    col.className = "col-12";
+  } else {
+    col.className = "col-12 col-md-6 col-lg-3";
+  }
+
+  const card = document.createElement("div");
     card.className = "sh-card";
     card.dataset.id = squadra.id;
 
