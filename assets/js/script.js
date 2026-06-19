@@ -7,6 +7,9 @@ function svuota(elemento) {
   }
 }
 
+// Tiene traccia del filtro sport attivo — stringa vuota = tutti gli sport
+let filtroAttivo = "";
+
 // ─── CLASSI ──────────────────────────────────────────────────────────────────
  
 // Ho testato gli endpoint con Postman prima di scrivere le classi,
@@ -20,6 +23,8 @@ class Squadra {
     this.logo = datiApi.strBadge;
     this.lega = datiApi.strLeague;
     this.paese = datiApi.strCountry;
+    // Campo sport per i filtri — es. "Soccer", "Basketball", "American Football"
+    this.sport = datiApi.strSport || "";
   }
 }
  
@@ -51,6 +56,7 @@ class Evento {
  
 // Cerca squadre per nome e restituisce un array di oggetti Squadra
 // Uso encodeURIComponent per gestire spazi e caratteri speciali nell'URL
+// Se c'è un filtro sport attivo lo aggiungo come parametro &s= all'URL
 async function cercaSquadre(query) {
   const url = `https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=${encodeURIComponent(query)}`;
 
@@ -109,6 +115,9 @@ const errorText = document.getElementById("errorText");
 // Tiene in memoria le ultime squadre cercate, serve per l'event delegation
 let ultimiRisultati = [];
 
+// Cache dei risultati grezzi dell'ultima ricerca — serve per applicare/togliere i filtri senza rifare la fetch
+let risultatiCacheati = [];
+
 // ─── DOM ─────────────────────────────────────────────────────────────────────
 
 // Crea e restituisce una card squadra come elemento DOM
@@ -117,7 +126,7 @@ function creaCardSquadra(squadra, isFavourite) {
   // Colonna Bootstrap per la griglia responsive
   /*squadra.logo(e sintassi simili) contiene l'URL del logo che l'API ci ha restituito nel campo strBadge, che nel costruttore di Squadra abbiamo mappato come this.logo = datiApi.strBadge.*/
   const col = document.createElement("div");
-  col.className = "col-12";
+  col.className = "col-12 col-md-6 col-lg-3";
  
   const card = document.createElement("div");
   card.className = "sh-card";
@@ -282,6 +291,14 @@ function mostraPreferiti() {
 
 // ─── RENDERING ───────────────────────────────────────────────────────────────
  
+// Filtra i risultati cacheati per sport e li mostra
+function applicaFiltro() {
+  const filtrate = filtroAttivo
+    ? risultatiCacheati.filter((s) => s.sport === filtroAttivo)
+    : risultatiCacheati;
+  mostraRisultati(filtrate);
+}
+
 // Mostra le card dei risultati di ricerca nella griglia
 function mostraRisultati(squadre) {
   // Salvo i risultati per poterli recuperare al click del bottone aggiungi
@@ -321,8 +338,8 @@ searchBtn.addEventListener("click", async () => {
   resultsEmpty.classList.add("d-none");
  
   try {
-    const squadre = await cercaSquadre(query);
-    mostraRisultati(squadre);
+    risultatiCacheati = await cercaSquadre(query);
+    applicaFiltro();
   } catch (err) {
     // Mostro il messaggio di errore rosso
     errorText.textContent = err.message;
@@ -386,7 +403,62 @@ function creaElementoEvento(evento) {
     match.appendChild(badge);
   }
 
+  // Al click sull'evento apro la modal con i dettagli completi
+  li.style.cursor = "pointer";
+  li.addEventListener("click", () => apriModalEvento(evento));
+
   return li;
+}
+
+// Apre la modal Bootstrap con i dettagli dell'evento cliccato
+function apriModalEvento(evento) {
+  const modalBody = document.getElementById("eventModalBody");
+  const modalLabel = document.getElementById("eventModalLabel");
+
+  svuota(modalBody);
+
+  modalLabel.textContent = `${evento.casa} vs ${evento.trasferta}`;
+
+  // Riga data
+  const rigaData = creaRigaModal("Data", evento.dataFormattata());
+  modalBody.appendChild(rigaData);
+
+  // Riga casa
+  const rigaCasa = creaRigaModal("Casa", evento.casa);
+  modalBody.appendChild(rigaCasa);
+
+  // Riga trasferta
+  const rigaTrasferta = creaRigaModal("Trasferta", evento.trasferta);
+  modalBody.appendChild(rigaTrasferta);
+
+  // Riga punteggio (solo se disponibile)
+  const score = evento.punteggio();
+  if (score) {
+    const rigaScore = creaRigaModal("Risultato", score);
+    modalBody.appendChild(rigaScore);
+  }
+
+  // Apro la modal con Bootstrap
+  const modal = new bootstrap.Modal(document.getElementById("eventModal"));
+  modal.show();
+}
+
+// Crea una riga label + valore per la modal
+function creaRigaModal(label, valore) {
+  const riga = document.createElement("div");
+  riga.className = "sh-modal-row";
+
+  const lbl = document.createElement("span");
+  lbl.className = "sh-modal-label";
+  lbl.textContent = label;
+
+  const val = document.createElement("span");
+  val.textContent = valore;
+
+  riga.appendChild(lbl);
+  riga.appendChild(val);
+
+  return riga;
 }
 
 // Mostra la sezione dettagli con prossimi eventi e ultimi risultati
@@ -455,7 +527,7 @@ resultsGrid.addEventListener("click", async (e) => {
 
 // ─── DEBOUNCE ─────────────────────────────────────────────────────────────────
 
-// Il debounce evita di chiamare l'API ad ogni tasto premuto 
+// Il debounce evita di chiamare l'API ad ogni tasto premuto —
 // aspetto 400ms di pausa prima di lanciare la ricerca
 let debounceTimer;
 
@@ -464,6 +536,7 @@ searchInput.addEventListener("input", () => {
 
   // Se il campo è vuoto svuoto subito la griglia e rimetto il placeholder
   if (!searchInput.value.trim()) {
+    risultatiCacheati = [];
     svuota(resultsGrid);
     const msg = document.createElement("p");
     msg.className = "sh-empty-text";
@@ -480,8 +553,8 @@ searchInput.addEventListener("input", () => {
     errorMsg.classList.add("d-none");
 
     try {
-      const squadre = await cercaSquadre(query);
-      mostraRisultati(squadre);
+      risultatiCacheati = await cercaSquadre(query);
+      applicaFiltro();
     } catch (err) {
       errorText.textContent = err.message;
       errorMsg.classList.remove("d-none");
@@ -513,3 +586,50 @@ document.getElementById("favouritesGrid").addEventListener("click", async (e) =>
     errorMsg.classList.remove("d-none");
   }
 });
+
+// ─── FILTRI SPORT ─────────────────────────────────────────────────────────────
+
+// Gestisce il click sui bottoni filtro con event delegation
+document.getElementById("sportFilters").addEventListener("click", (e) => {
+  const btn = e.target.closest(".sh-filter-btn");
+  if (!btn) return;
+
+  // Rimuovo active da tutti i bottoni e lo metto su quello cliccato
+  document.querySelectorAll(".sh-filter-btn").forEach((b) => b.classList.remove("active"));
+  btn.classList.add("active");
+
+  filtroAttivo = btn.dataset.sport;
+
+  // Riapplico il filtro sui risultati già in memoria
+  applicaFiltro();
+});
+
+// ─── CARICAMENTO PARALLELO PREFERITE ALL'AVVIO ───────────────────────────────
+
+// All'avvio carico i dettagli di tutte le preferite in parallelo con Promise.all
+// così ho subito i prossimi appuntamenti senza dover cliccare su ogni squadra
+async function caricaDettagliPreferite() {
+  const preferiti = leggiPreferiti();
+  if (preferiti.length === 0) return;
+
+  try {
+    // Lancio tutte le fetch in parallelo
+    const risultati = await Promise.all(
+      preferiti.map((s) => caricaDettagliSquadra(s.id))
+    );
+
+    // Mostro i prossimi eventi della prima squadra che ha eventi in programma
+    for (let i = 0; i < preferiti.length; i++) {
+      if (risultati[i].prossimi.length > 0) {
+        mostraDettagli(preferiti[i], risultati[i].prossimi, risultati[i].ultimi);
+        break;
+      }
+    }
+  } catch (err) {
+    // Errore silenzioso all'avvio — non blocco l'utente
+    console.warn("Errore nel caricamento dettagli preferite:", err.message);
+  }
+}
+
+// Avvio il caricamento parallelo delle preferite
+caricaDettagliPreferite();

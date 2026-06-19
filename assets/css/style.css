@@ -235,6 +235,50 @@ body {
   width: 100%;
 }
 
-#resultsGrid .sh-card {
-  width: 100%;
+/* --- FILTRI SPORT --- */
+.sh-filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.sh-filter-btn {
+  background: #fff;
+  color: #193366;
+  border: 2px solid #193366;
+  border-radius: 20px;
+  padding: 0.35rem 1rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.sh-filter-btn:hover {
+  background-color: #193366;
+  color: #fff;
+}
+
+.sh-filter-btn.active {
+  background-color: #193366;
+  color: #fff;
+}
+
+/* --- MODAL --- */
+.sh-modal-header {
+  background-color: #193366;
+  color: #fff;
+}
+
+.sh-modal-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+}
+
+.sh-modal-label {
+  color: #888;
+  font-size: 0.8rem;
 }
