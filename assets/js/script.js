@@ -126,8 +126,7 @@ function creaCardSquadra(squadra, isFavourite) {
   // Colonna Bootstrap per la griglia responsive
   /*squadra.logo(e sintassi simili) contiene l'URL del logo che l'API ci ha restituito nel campo strBadge, che nel costruttore di Squadra abbiamo mappato come this.logo = datiApi.strBadge.*/
   const col = document.createElement("div");
-  col.className = "col-12 col-md-6 col-lg-3";
- 
+col.className = "col-12"; 
   const card = document.createElement("div");
   card.className = "sh-card";
   card.dataset.id = squadra.id;

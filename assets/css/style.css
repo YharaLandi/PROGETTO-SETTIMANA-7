@@ -282,3 +282,12 @@ body {
   color: #888;
   font-size: 0.8rem;
 }
+
+/* --- COMPORTAMENTO BASE (MOBILE: 1 COLONNA) --- */
+.sh-col-preferito {
+  width: 100%;
+  padding-right: calc(var(--bs-gutter-x) * .5);
+  padding-left: calc(var(--bs-gutter-x) * .5);
+  margin-top: var(--bs-gutter-y);
+}
+
