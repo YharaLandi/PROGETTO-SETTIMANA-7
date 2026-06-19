@@ -24,3 +24,17 @@ body {
   opacity: 0.85;
   margin-bottom: 1.2rem;
 }
+.sh-btn-cerca {
+  background-color: #fff;
+  color: #193366;
+  border: 2px solid #fff;
+  border-radius: 6px;
+  padding: 0.55rem 1.3rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color 0.2s, color 0.2s;
+}
+.sh-btn-cerca:hover {
+  background-color: hsl(45, 94%, 87%);
+  color: #193366;
+}
