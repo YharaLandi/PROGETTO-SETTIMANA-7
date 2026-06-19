@@ -1,0 +1,26 @@
+/*OVERRIDE*/
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #F4F6FA;
+  color: #222;
+}
+
+/* --- HEADER --- */
+.sh-header {
+  background-color: #193366;
+  color: #fff;
+  padding: 2rem 0 1.8rem;
+  text-align: center;
+}
+
+.sh-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+ 
+.sh-subtitle {
+  font-size: 1rem;
+  opacity: 0.85;
+  margin-bottom: 1.2rem;
+}
