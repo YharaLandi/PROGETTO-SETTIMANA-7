@@ -291,3 +291,9 @@ body {
   margin-top: var(--bs-gutter-y);
 }
 
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .ultimo-dispari {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
