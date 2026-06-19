@@ -1,3 +1,12 @@
+// ─── UTILITY ─────────────────────────────────────────────────────────────────
+
+// Svuota un elemento rimuovendo i figli uno ad uno — più sicuro di innerHTML = ""
+function svuota(elemento) {
+  while (elemento.firstChild) {
+    elemento.removeChild(elemento.firstChild);
+  }
+}
+
 // ─── CLASSI ──────────────────────────────────────────────────────────────────
  
 // Ho testato gli endpoint con Postman prima di scrivere le classi,
@@ -37,6 +46,7 @@ class Evento {
     return `${this.golCasa} - ${this.golTrasferta}`;
   }
 }
+
 // ─── FETCH ───────────────────────────────────────────────────────────────────
  
 // Cerca squadre per nome e restituisce un array di oggetti Squadra
@@ -44,12 +54,12 @@ class Evento {
 async function cercaSquadre(query) {
   const url = `https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=${encodeURIComponent(query)}`;
 
- // Primo .then equivalente: controllo che la risposta HTTP sia ok
- //fetch(url) — manda la richiesta HTTP all'URL e restituisce una Promise|||||||await — mette in pausa la funzione finché la Promise non si risolve, e quando si risolve estrae il valore (in questo caso la response)|||||throw new Error(...) — lancia un errore che interrompe l'esecuzione della funzione e viene "catturato" dal try/catch che chiamerà cercaSquadre — lo gestiremo lì quando faremo il DOM
+  // Primo .then equivalente: controllo che la risposta HTTP sia ok
+  //fetch(url) — manda la richiesta HTTP all'URL e restituisce una Promise|||||||await — mette in pausa la funzione finché la Promise non si risolve, e quando si risolve estrae il valore (in questo caso la response)|||||throw new Error(...) — lancia un errore che interrompe l'esecuzione della funzione e viene "catturato" dal try/catch che chiamerà cercaSquadre — lo gestiremo lì quando faremo il DOM
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Errore HTTP: ${response.status}`);
 
- // Secondo .then equivalente: converto la risposta in JSON
+  // Secondo .then equivalente: converto la risposta in JSON
   const dati = await response.json();
  
   // L'API restituisce { teams: null } se non trova nessuna squadra
@@ -58,10 +68,8 @@ async function cercaSquadre(query) {
   return dati.teams.map((t) => new Squadra(t));
 }
 
-
 // Carica prossimi eventi e ultimi risultati di una squadra
 // Uso Promise.all per lanciare le due fetch in parallelo invece di aspettarle in sequenza
-
 async function caricaDettagliSquadra(idSquadra) {
   const urlProssimi = `https://www.thesportsdb.com/api/v1/json/3/eventsnext.php?id=${idSquadra}`;
   const urlUltimi = `https://www.thesportsdb.com/api/v1/json/3/eventslast.php?id=${idSquadra}`;
@@ -71,7 +79,7 @@ async function caricaDettagliSquadra(idSquadra) {
     fetch(urlProssimi),
     fetch(urlUltimi),
   ]);
- //Promise.all è un metodo statico della classe Promise che accetta un array di Promise e restituisce una nuova Promise che si risolve solo quando tutte le Promise dell'array si sono risolte.
+  //Promise.all è un metodo statico della classe Promise che accetta un array di Promise e restituisce una nuova Promise che si risolve solo quando tutte le Promise dell'array si sono risolte.
 
   if (!resProssimi.ok || !resUltimi.ok) throw new Error("Errore nel caricamento degli eventi");
  
@@ -98,14 +106,18 @@ const spinner = document.getElementById("spinner");
 const errorMsg = document.getElementById("errorMsg");
 const errorText = document.getElementById("errorText");
 
- // ─── DOM ─────────────────────────────────────────────────────────────────────
- // Crea e restituisce una card squadra come elemento DOM
-// solito, u so createElement invece di innerHTML per sicurezza
+// Tiene in memoria le ultime squadre cercate, serve per l'event delegation
+let ultimiRisultati = [];
+
+// ─── DOM ─────────────────────────────────────────────────────────────────────
+
+// Crea e restituisce una card squadra come elemento DOM
+// uso createElement invece di innerHTML per sicurezza
 function creaCardSquadra(squadra, isFavourite) {
   // Colonna Bootstrap per la griglia responsive
   /*squadra.logo(e sintassi simili) contiene l'URL del logo che l'API ci ha restituito nel campo strBadge, che nel costruttore di Squadra abbiamo mappato come this.logo = datiApi.strBadge.*/
   const col = document.createElement("div");
-  col.className = "col-12 col-sm-6 col-md-4 col-lg-3";
+  col.className = "col-12";
  
   const card = document.createElement("div");
   card.className = "sh-card";
@@ -153,12 +165,130 @@ function creaCardSquadra(squadra, isFavourite) {
   return col;
 }
 
+// Crea il bottone Rimuovi con icona Bootstrap Icons senza innerHTML
+function creaBtnRimuovi(idSquadra) {
+  const btn = document.createElement("button");
+  btn.className = "sh-btn-remove";
+
+  // Icona trash con createElement invece di innerHTML
+  const icona = document.createElement("i");
+  icona.className = "bi bi-trash";
+
+  const testo = document.createTextNode(" Rimuovi");
+
+  btn.appendChild(icona);
+  btn.appendChild(testo);
+  btn.addEventListener("click", () => rimuoviPreferita(idSquadra));
+
+  return btn;
+}
+
+// ─── PREFERITI (localStorage) ─────────────────────────────────────────────────
+
+// Legge i preferiti dal localStorage, restituisce array vuoto se non ce ne sono
+function leggiPreferiti() {
+  const dati = localStorage.getItem("sportshub_preferiti");
+  return dati ? JSON.parse(dati) : [];
+}
+
+// Salva l'array dei preferiti nel localStorage
+function salvaPreferiti(preferiti) {
+  localStorage.setItem("sportshub_preferiti", JSON.stringify(preferiti));
+}
+
+// Controlla se una squadra è già nei preferiti tramite il suo id
+function isPreferita(idSquadra) {
+  return leggiPreferiti().some((s) => s.id === idSquadra);
+}
+
+// Aggiunge una squadra ai preferiti se non è già presente
+function aggiungiPreferita(squadra) {
+  const preferiti = leggiPreferiti();
+  if (!isPreferita(squadra.id)) {
+    preferiti.push(squadra);
+    salvaPreferiti(preferiti);
+  }
+  mostraPreferiti();
+}
+
+// Rimuove una squadra dai preferiti tramite il suo id
+function rimuoviPreferita(idSquadra) {
+  const preferiti = leggiPreferiti().filter((s) => s.id !== idSquadra);
+  salvaPreferiti(preferiti);
+  mostraPreferiti();
+
+  // Aggiorno il bottone nella griglia risultati se la card e ancora visibile
+  const card = resultsGrid.querySelector(`[data-id="${idSquadra}"]`);
+  if (card) {
+    const btn = card.querySelector('.sh-btn-already');
+    if (btn) {
+      btn.className = 'sh-btn-add';
+      btn.textContent = '★ Aggiungi ai preferiti';
+      btn.disabled = false;
+    }
+  }
+}
+
+// Renderizza le card nella sezione preferiti
+function mostraPreferiti() {
+  const favouritesGrid = document.getElementById("favouritesGrid");
+  const favouritesEmpty = document.getElementById("favouritesEmpty");
+  const preferiti = leggiPreferiti();
+
+  // Svuoto la griglia con removeChild invece di innerHTML
+  svuota(favouritesGrid);
+
+  if (preferiti.length === 0) {
+    favouritesEmpty.classList.remove("d-none");
+    return;
+  }
+
+  favouritesEmpty.classList.add("d-none");
+
+  preferiti.forEach((squadra) => {
+    const col = document.createElement("div");
+    col.className = "col-12 col-md-6 col-lg-3";
+
+    const card = document.createElement("div");
+    card.className = "sh-card";
+    card.dataset.id = squadra.id;
+
+    const logo = document.createElement("img");
+    logo.src = squadra.logo;
+    logo.alt = `Logo ${squadra.nome}`;
+    logo.className = "sh-card-logo";
+
+    const nome = document.createElement("p");
+    nome.className = "sh-card-name";
+    nome.textContent = squadra.nome;
+
+    const lega = document.createElement("p");
+    lega.className = "sh-card-league";
+    lega.textContent = squadra.lega;
+
+    const paese = document.createElement("p");
+    paese.className = "sh-card-country";
+    paese.textContent = squadra.paese;
+
+    card.appendChild(logo);
+    card.appendChild(nome);
+    card.appendChild(lega);
+    card.appendChild(paese);
+    card.appendChild(creaBtnRimuovi(squadra.id));
+    col.appendChild(card);
+    favouritesGrid.appendChild(col);
+  });
+}
+
 // ─── RENDERING ───────────────────────────────────────────────────────────────
  
 // Mostra le card dei risultati di ricerca nella griglia
 function mostraRisultati(squadre) {
-  // Svuoto la griglia prima di aggiungere i nuovi risultati
-  resultsGrid.innerHTML = "";
+  // Salvo i risultati per poterli recuperare al click del bottone aggiungi
+  ultimiRisultati = squadre;
+
+  // Svuoto la griglia con removeChild invece di innerHTML
+  svuota(resultsGrid);
  
   // Se non ci sono risultati mostro il messaggio e mi fermo
   if (squadre.length === 0) {
@@ -169,69 +299,12 @@ function mostraRisultati(squadre) {
     return;
   }
  
-  // Creo una card per ogni squadra e la aggiungo alla griglia
+  // Creo una card per ogni squadra, segnalandola se è già nei preferiti
   squadre.forEach((squadra) => {
-    const card = creaCardSquadra(squadra, false);
+    const card = creaCardSquadra(squadra, isPreferita(squadra.id));
     resultsGrid.appendChild(card);
   });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // ─── LISTENER ────────────────────────────────────────────────────────────────
  
@@ -255,7 +328,188 @@ searchBtn.addEventListener("click", async () => {
     errorText.textContent = err.message;
     errorMsg.classList.remove("d-none");
   } finally {
-    // Nascondo sempre lo spinner, che vada bene o male
+    // finally viene eseguito sempre, sia in caso di successo che di errore
     spinner.classList.add("d-none");
+  }
+});
+
+// Event delegation sulla griglia risultati per il bottone aggiungi
+// così non devo aggiungere un listener su ogni singolo bottone
+resultsGrid.addEventListener("click", (e) => {
+  const btn = e.target.closest(".sh-btn-add");
+  if (!btn) return;
+
+  // Risalgo alla card per prendere l'id della squadra
+  const card = btn.closest("[data-id]");
+  const idSquadra = card.dataset.id;
+
+  // Trovo la squadra nell'array e la aggiungo ai preferiti
+  const squadra = ultimiRisultati.find((s) => s.id === idSquadra);
+  if (squadra) aggiungiPreferita(squadra);
+
+  // Aggiorno il bottone senza rifare la ricerca
+  btn.className = "sh-btn-already";
+  btn.textContent = "✓ Già nei preferiti";
+  btn.disabled = true;
+});
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+// Carico i preferiti salvati al refresh della pagina
+mostraPreferiti();
+
+// ─── DETTAGLI SQUADRA ────────────────────────────────────────────────────────
+
+// Crea un elemento lista per un evento (partita futura o risultato passato)
+function creaElementoEvento(evento) {
+  const li = document.createElement("li");
+
+  // Data in formato italiano
+  const data = document.createElement("span");
+  data.className = "sh-event-date";
+  data.textContent = evento.dataFormattata();
+
+  // Nome della partita (casa vs trasferta)
+  const match = document.createElement("span");
+  match.className = "sh-event-match";
+  match.textContent = `${evento.casa} vs ${evento.trasferta}`;
+
+  li.appendChild(data);
+  li.appendChild(match);
+
+  // Se c'è un punteggio (partita già giocata) aggiungo il badge verde
+  const score = evento.punteggio();
+  if (score) {
+    const badge = document.createElement("span");
+    badge.className = "sh-badge-score";
+    badge.textContent = score;
+    match.appendChild(badge);
+  }
+
+  return li;
+}
+
+// Mostra la sezione dettagli con prossimi eventi e ultimi risultati
+function mostraDettagli(squadra, prossimi, ultimi) {
+  const detailsSection = document.getElementById("detailsSection");
+  const detailsTeamName = document.getElementById("detailsTeamName");
+  const nextEventsList = document.getElementById("nextEventsList");
+  const lastResultsList = document.getElementById("lastResultsList");
+
+  // Imposto il nome della squadra come titolo
+  detailsTeamName.textContent = squadra.nome;
+
+  // Svuoto le liste con removeChild
+  svuota(nextEventsList);
+  svuota(lastResultsList);
+
+  // Prossimi eventi
+  if (prossimi.length === 0) {
+    const msg = document.createElement("p");
+    msg.className = "sh-empty-text";
+    msg.textContent = "Nessun evento in programma";
+    nextEventsList.appendChild(msg);
+  } else {
+    prossimi.forEach((e) => nextEventsList.appendChild(creaElementoEvento(e)));
+  }
+
+  // Ultimi risultati
+  if (ultimi.length === 0) {
+    const msg = document.createElement("p");
+    msg.className = "sh-empty-text";
+    msg.textContent = "Nessun risultato disponibile";
+    lastResultsList.appendChild(msg);
+  } else {
+    ultimi.forEach((e) => lastResultsList.appendChild(creaElementoEvento(e)));
+  }
+
+  // Mostro la sezione (era nascosta con d-none)
+  detailsSection.classList.remove("d-none");
+
+  // Scorro la pagina fino ai dettagli
+  detailsSection.scrollIntoView({ behavior: "smooth" });
+}
+
+// Listener sul click delle card risultati per caricare i dettagli
+// Uso event delegation sulla griglia invece di un listener per ogni card
+resultsGrid.addEventListener("click", async (e) => {
+  // Ignoro i click sul bottone aggiungi (gestito dall'altro listener)
+  if (e.target.closest(".sh-btn-add") || e.target.closest(".sh-btn-already")) return;
+
+  // Risalgo alla card cliccata
+  const card = e.target.closest("[data-id]");
+  if (!card) return;
+
+  const idSquadra = card.dataset.id;
+  const squadra = ultimiRisultati.find((s) => s.id === idSquadra);
+  if (!squadra) return;
+
+  try {
+    const { prossimi, ultimi } = await caricaDettagliSquadra(idSquadra);
+    mostraDettagli(squadra, prossimi, ultimi);
+  } catch (err) {
+    errorText.textContent = err.message;
+    errorMsg.classList.remove("d-none");
+  }
+});
+
+// ─── DEBOUNCE ─────────────────────────────────────────────────────────────────
+
+// Il debounce evita di chiamare l'API ad ogni tasto premuto 
+// aspetto 400ms di pausa prima di lanciare la ricerca
+let debounceTimer;
+
+searchInput.addEventListener("input", () => {
+  clearTimeout(debounceTimer);
+
+  // Se il campo è vuoto svuoto subito la griglia e rimetto il placeholder
+  if (!searchInput.value.trim()) {
+    svuota(resultsGrid);
+    const msg = document.createElement("p");
+    msg.className = "sh-empty-text";
+    msg.textContent = "Inizia cercando una squadra qui sopra.";
+    resultsGrid.appendChild(msg);
+    return;
+  }
+
+  debounceTimer = setTimeout(async () => {
+    const query = searchInput.value.trim();
+    if (!query) return;
+
+    spinner.classList.remove("d-none");
+    errorMsg.classList.add("d-none");
+
+    try {
+      const squadre = await cercaSquadre(query);
+      mostraRisultati(squadre);
+    } catch (err) {
+      errorText.textContent = err.message;
+      errorMsg.classList.remove("d-none");
+    } finally {
+      spinner.classList.add("d-none");
+    }
+  }, 400);
+});
+
+// Event delegation sulla griglia preferiti per caricare i dettagli al click
+// stesso comportamento della griglia risultati
+document.getElementById("favouritesGrid").addEventListener("click", async (e) => {
+  // Ignoro i click sul bottone rimuovi
+  if (e.target.closest(".sh-btn-remove")) return;
+
+  const card = e.target.closest("[data-id]");
+  if (!card) return;
+
+  const idSquadra = card.dataset.id;
+  const preferiti = leggiPreferiti();
+  const squadra = preferiti.find((s) => s.id === idSquadra);
+  if (!squadra) return;
+
+  try {
+    const { prossimi, ultimi } = await caricaDettagliSquadra(idSquadra);
+    mostraDettagli(squadra, prossimi, ultimi);
+  } catch (err) {
+    errorText.textContent = err.message;
+    errorMsg.classList.remove("d-none");
   }
 });

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SportsHub</title>
@@ -8,30 +9,21 @@
     <!-- Google Fonts: Roboto -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
     <!-- Bootstrap 5 CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <!-- Bootstrap Icons -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="assets/css/style.css" />
-  </head>
+</head>
   <body>
-
-    <!-- HEADER -->
+ 
+ <!-- HEADER -->
     <header class="sh-header">
       <div class="container">
         <h1 class="sh-title">SportsHub</h1>
         <p class="sh-subtitle">Cerca una squadra, scopri prossime partite e ultimi risultati.</p>
-
+ 
         <div class="sh-search-bar">
           <input
             type="text"
@@ -43,29 +35,29 @@
         </div>
       </div>
     </header>
-
+ 
     <!-- MAIN -->
     <main class="container py-4">
-
+ 
       <!-- SEZIONE PREFERITE -->
       <section id="favouritesSection" class="mb-5">
         <h2 class="sh-section-title">
           <i class="bi bi-star-fill sh-star"></i> Le tue squadre preferite
         </h2>
-
+ 
+        <!-- placeholder visibile finché non ci sono preferite -->
+        <p id="favouritesEmpty" class="sh-empty-text">
+          Non hai ancora salvato nessuna squadra. Cercane una qui sopra e aggiungila ai preferiti.
+        </p>
+ 
         <!-- griglia preferite: riempita dal JS -->
-        <div id="favouritesGrid" class="row g-3 mt-2">
-          <!-- placeholder visibile finché non ci sono preferite -->
-          <p id="favouritesEmpty" class="sh-empty-text">
-            Non hai ancora salvato nessuna squadra. Cercane una qui sopra e aggiungila ai preferiti.
-          </p>
-        </div>
+        <div id="favouritesGrid" class="row g-3 mt-2"></div>
       </section>
-
+ 
       <!-- SEZIONE SQUADRE TROVATE -->
       <section id="resultsSection">
         <h2 class="sh-section-title">Squadre trovate</h2>
-
+ 
         <!-- griglia risultati: riempita dal JS -->
         <div id="resultsGrid" class="row g-3 mt-2">
           <!-- placeholder iniziale -->
@@ -73,27 +65,28 @@
             Inizia cercando una squadra qui sopra.
           </p>
         </div>
-
+ 
         <!-- spinner caricamento (nascosto di default) -->
         <div id="spinner" class="text-center py-4 d-none">
           <div class="spinner-border sh-spinner" role="status">
             <span class="visually-hidden">Caricamento...</span>
           </div>
         </div>
-
+ 
         <!-- messaggio errore (nascosto di default) -->
         <div id="errorMsg" class="alert alert-danger d-none mt-3" role="alert">
           <i class="bi bi-exclamation-triangle-fill me-2"></i>
           <span id="errorText"></span>
         </div>
       </section>
-
+ 
       <!-- SEZIONE DETTAGLI SQUADRA (nascosta di default) -->
-      <section id="detailsSection" class="d-none mt-5">
-        <h3 id="detailsTeamName" class="sh-details-title"></h3>
-
-        <div class="row g-4 mt-1">
-
+      <section id="detailsSection" class="d-none mt-4">
+        <div class="sh-details-card">
+          <h3 id="detailsTeamName" class="sh-details-title"></h3>
+ 
+          <div class="row g-4 mt-1">
+ 
           <!-- Prossimi eventi -->
           <div class="col-12 col-md-6">
             <h5 class="sh-events-title">Prossimi eventi</h5>
@@ -102,7 +95,7 @@
               <!-- riempita dal JS -->
             </ul>
           </div>
-
+ 
           <!-- Ultimi risultati -->
           <div class="col-12 col-md-6">
             <h5 class="sh-events-title">Ultimi risultati</h5>
@@ -111,14 +104,17 @@
               <!-- riempita dal JS -->
             </ul>
           </div>
-
+ 
+          </div>
         </div>
       </section>
-
+ 
     </main>
-
+ 
+ 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/script.js"></script>
-  </body>
+</body>
+
 </html>

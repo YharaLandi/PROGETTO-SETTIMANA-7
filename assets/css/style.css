@@ -1,4 +1,6 @@
-/*OVERRIDE*/
+
+
+/* --- Font globale --- */
 body {
   font-family: "Roboto", sans-serif;
   background-color: #F4F6FA;
@@ -18,12 +20,13 @@ body {
   font-weight: 700;
   margin-bottom: 0.3rem;
 }
- 
+
 .sh-subtitle {
   font-size: 1rem;
   opacity: 0.85;
   margin-bottom: 1.2rem;
 }
+
 /* --- BARRA DI RICERCA --- */
 .sh-search-bar {
   display: flex;
@@ -32,7 +35,7 @@ body {
   max-width: 520px;
   margin: 0 auto;
 }
- 
+
 .sh-input {
   flex: 1;
   border-radius: 6px;
@@ -40,12 +43,12 @@ body {
   padding: 0.55rem 1rem;
   font-size: 0.95rem;
 }
- 
+
 .sh-input:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
 }
- 
+
 .sh-btn-cerca {
   background-color: #fff;
   color: #193366;
@@ -56,29 +59,29 @@ body {
   white-space: nowrap;
   transition: background-color 0.2s, color 0.2s;
 }
- 
+
 .sh-btn-cerca:hover {
   background-color: #ebe4cf;
   color: #193366;
 }
- 
+
 /* --- SEZIONI --- */
 .sh-section-title {
   font-size: 1.3rem;
   font-weight: 700;
   margin-bottom: 0.2rem;
 }
- 
+
 .sh-star {
   color: #f5a623;
 }
- 
+
 .sh-empty-text {
   color: #888;
   font-style: italic;
   margin-top: 0.5rem;
 }
- 
+
 /* --- CARD SQUADRA --- */
 .sh-card {
   background: #fff;
@@ -92,26 +95,26 @@ body {
   gap: 0.4rem;
   height: 100%;
 }
- 
+
 .sh-card-logo {
   width: 90px;
   height: 90px;
   object-fit: contain;
 }
- 
+
 .sh-card-name {
   font-weight: 700;
   font-size: 0.95rem;
   margin: 0.3rem 0 0;
 }
- 
+
 .sh-card-league,
 .sh-card-country {
   font-size: 0.82rem;
   color: #777;
   margin: 0;
 }
- 
+
 /* --- BOTTONI CARD --- */
 .sh-btn-add {
   background-color: hsl(45, 90%, 55%);
@@ -124,11 +127,11 @@ body {
   margin-top: auto;
   transition: background-color 0.2s;
 }
- 
+
 .sh-btn-add:hover {
   background-color: hsl(45, 90%, 48%);
 }
- 
+
 .sh-btn-remove {
   background-color: #ffe5e5;
   color: #AA0000;
@@ -140,11 +143,11 @@ body {
   margin-top: auto;
   transition: background-color 0.2s;
 }
- 
+
 .sh-btn-remove:hover {
   background-color: #ffd0d0;
 }
- 
+
 .sh-btn-already {
   background-color: #e9ecef;
   color: #555;
@@ -156,50 +159,50 @@ body {
   margin-top: auto;
   cursor: default;
 }
- 
+
 /* --- SPINNER --- */
 .sh-spinner {
   color: #193366;
   width: 2.5rem;
   height: 2.5rem;
 }
- 
+
 /* --- SEZIONE DETTAGLI --- */
 .sh-details-title {
   color: #193366;
   font-weight: 700;
   font-size: 1.4rem;
 }
- 
+
 .sh-events-title {
   font-weight: 700;
   font-size: 1rem;
   margin-bottom: 0.3rem;
 }
- 
+
 .sh-divider {
   border-color: #193366;
   opacity: 1;
   margin-top: 0.2rem;
   margin-bottom: 0.8rem;
 }
- 
+
 .sh-events-list li {
   margin-bottom: 0.8rem;
 }
- 
+
 .sh-event-date {
   font-size: 0.78rem;
   color: #888;
   display: block;
   margin-bottom: 0.1rem;
 }
- 
+
 .sh-event-match {
   font-weight: 500;
   font-size: 0.9rem;
 }
- 
+
 /* badge punteggio */
 .sh-badge-score {
   display: inline-block;
@@ -210,4 +213,28 @@ body {
   font-size: 0.78rem;
   font-weight: 700;
   margin-left: 0.4rem;
+}
+
+/* --- HOVER CARD --- */
+.sh-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.sh-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* --- CARD DETTAGLI --- */
+.sh-details-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  width: 100%;
+}
+
+#resultsGrid .sh-card {
+  width: 100%;
 }
